@@ -1,3 +1,4 @@
+import { createCard, cred } from "./function.js";
 let main = document.querySelector('.main2');
 let dark = document.querySelector('.dark');
 let container = document.querySelector('.container');
@@ -12,27 +13,19 @@ let hit = document.querySelector('.h3')
 let p = document.querySelectorAll('.p')
 let main4 = document.querySelectorAll('.main4')
 let inn = document.querySelector('#inn')
-let btt = document.querySelector('btt')
+let click = document.querySelector('#click')
 
 
 
 
+window.addEventListener('load', function() {
+    const loader = document.querySelector('.loader');
 
-
-
-function createCard(arg) {
-    return `
-     <div class="davlat">
-         <img src="${arg.flags.png}" alt="">
-        <div class="wrap">
-        <h3 class="h3"> ${arg.name.common}</h3>
-        <p class="p">Population: ${arg.population}</p>
-        <p class="p">region: ${arg.region}</p>
-        <p class="p"> capita:${arg.capital}</p>
-        </div>
-     </div>
-    `
-}
+    loader.classList.add("loader-hidden");
+    loader.addEventListener('transitionend', function () {
+        
+    })
+})
 
 
 
@@ -53,23 +46,24 @@ let value = region.value
 })
 })
 
+const BASE_URL = "https://frontend-mentor-apis-6efy.onrender.com";
 
 
 document.addEventListener('DOMContentLoaded', function(){
-    const BASE_URL = `https://frontend-mentor-apis-6efy.onrender.com`
     fetch(`${BASE_URL}/countries`,{
         method: 'GET'
     })
     
-    
+     
          .then(res =>{
             if (res.ok == true && res.status == 200) {
                 return res.json()
             }
          })
          .then(data =>{
+            console.log(data);
             if (data.data.length) {
-               
+                
                 data.data.forEach((arg)=>{
                     let card = createCard(arg)
                     main.innerHTML += card
@@ -115,6 +109,7 @@ dark && dark.addEventListener("click" ,function(e){
           input.style.backgroundColor = '#2B3844'
           input.style.color = 'white'
           region.style.color = 'white'
+          hit.style.color = ''
        
 
      }
@@ -165,36 +160,24 @@ dark && dark.addEventListener("click" ,function(e){
     }
     })
 
-    // function bigcard(vlg) {
-    //     return `
-    //     <div class="main3">
-    //     <button><-- Back</button>
-            
-    //     <div class="lite">
-    //         <img src="${vlg.flags.png}" alt="">
-    //         <div class="little">
-    //            <div class="right">
-    //             <h1>${vlg.name.common}</h1>
-    //             <br>
-    //             <p>Native Name :<span>${vlg.nativeName}</span></p>
-    //             <p>population :<span>${vlg.population}</span></p>
-    //             <p>region :<span>${vlg.region}</span></p>
-    //             <p>sub region: <span>${vlg.subregion}</span></p>
-    //             <p>capital :<span>${vlg.capital}</span></p>
-    //            </div>
-    //            <div class="left">
-    //             <p>top level domain :<span>be</span></p>
-    //             <p>currencies :<span>${vlg.currecies}</span></p>
-    //             <p>languages :<span>${vlg.languages}</span></p>
-                
-    //            </div>
-    //         </div>
-            
-    // </div>
-    // <h6>border countries : <span>Franse</span> <span>germany</span> <span>netherlands</span></h6>
-    // </div>
-    //     `
+  
 
-    // }
+    inn.addEventListener("input", updateValue);
+    function updateValue(e) {
     
-
+        fetch(`${BASE_URL}/countries?search=${e.target.value}`, {
+            method: "GET"
+        })
+            .then(res => res.json())
+            .then(result => {
+                main.innerHTML = '';
+    
+                result.data.forEach(data => {
+                    let card = createCard(data);
+                    main.innerHTML += card;
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
